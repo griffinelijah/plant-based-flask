@@ -28,3 +28,10 @@ def create_post():
 		#must be turned into a dict before returning the json object
 		post_dict = model_to_dict(post)
 		return jsonify(data=post_dict, status={'code': 201, 'message': 'sucessfully created post'}), 201
+
+#route to retrieve a single post
+@posts.route('/<id>', methods=['GET'])
+def get_one_post(id):
+	post = models.Post.get_by_id(id)
+	post_dict = model_to_dict(post)
+	return jsonify(data=post_dict, status={'code': 201, 'message': 'successfully retrieved postt'})
