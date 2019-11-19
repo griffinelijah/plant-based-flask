@@ -35,3 +35,35 @@ def get_one_post(id):
 	post = models.Post.get_by_id(id)
 	post_dict = model_to_dict(post)
 	return jsonify(data=post_dict, status={'code': 201, 'message': 'successfully retrieved postt'})
+
+
+#route to update an existing post
+@posts.route('/<id>', methods=['PUT'])
+def update_post(id):
+	payload = request.get_json()
+	#this updates the post with the info from payload that matches the post id being passed throug the url
+	query = models.Post.update(**payload).where(models.Post.id == id)
+	query.execute()
+	#this returns updated post object and turns to dict
+	post = models.Post.get_by_id(id)
+	post_dict = model_to_dict(post)
+
+	return jsonify(data=post_dict, status={'code': 200, 'message': 'post succesfully updated'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
