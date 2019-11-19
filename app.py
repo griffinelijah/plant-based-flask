@@ -1,5 +1,7 @@
-from flask import Flask
+from flask import Flask, jsonify, g
 import models
+
+from resources.posts import posts
 
 DEBUG = True
 PORT = 8000
@@ -14,7 +16,7 @@ def before_request():
 	g.db.connect()
 
 @app.after_request
-def after_request():
+def after_request(response):
 	#close connection to DB after every request
 	g.db.close()
 	return response
@@ -24,6 +26,8 @@ def after_request():
 def hello():
 	return 'Hello'
 
+
+app.register_blueprint(posts, url_prefix='/api/v1/posts')
 
 if __name__ == '__main__':
 	models.initialize()
