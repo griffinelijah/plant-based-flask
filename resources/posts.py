@@ -4,6 +4,15 @@ from playhouse.shortcuts import model_to_dict
 
 posts = Blueprint('posts', 'posts')
 
+#basic index route to display all created posts
+@posts.route('/', methods=['GET'])
+def post_index():
+	try:
+		posts = [model_to_dict(posts) for posts in models.Post.select()]
+		return jsonify(data=posts, status={'code': 200, 'message': 'Successfully got all resources'}), 200
+	except models.DoesNotExist:
+		return jsonify(data={}, status={'code': 401, 'message': 'Error getting resources'})
+
 @posts.route('/', methods=['POST'])
 def create_post():
 		#this route will let you create a post
