@@ -3,6 +3,7 @@ import models
 
 from resources.posts import posts
 from resources.users import users
+from resources.comments import comments
 
 from flask_login import LoginManager
 
@@ -46,6 +47,7 @@ def hello():
 
 app.register_blueprint(posts, url_prefix='/api/v1/posts')
 app.register_blueprint(users, url_prefix='/api/v1/users')
+app.register_blueprint(comments, url_prefix='/api/v1/comments')
 
 if __name__ == '__main__':
 	models.initialize()

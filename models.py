@@ -13,7 +13,7 @@ class User(UserMixin, Model):
 		database = DATABASE
 
 class Comment(Model):
-	user = ForeignKeyField(User, backref='comments')
+	# user = ForeignKeyField(User, backref='comments')
 	body = CharField()
 	# post = ForeignKeyField(Post, backref='comments')
 
