@@ -16,6 +16,7 @@ def post_index():
 
 #this route will show only posts created by the currently logged in user
 @posts.route('/myPosts', methods=['GET'])
+@login_required
 def current_users_posts():
 	try:# look for all posts that have a user id that matches the currently logged in users id
 		this_users_post_instances = models.Post.select().where(models.Post.user_id == current_user.id)
@@ -27,6 +28,7 @@ def current_users_posts():
 
 #route that let's you create a new post
 @posts.route('/', methods=['POST'])
+@login_required
 def create_post():
 		#this route will let you create a post
 		payload = request.get_json()
@@ -47,6 +49,7 @@ def create_post():
 
 #route to retrieve a single post
 @posts.route('/<id>', methods=['GET'])
+@login_required
 def get_one_post(id):
 	post = models.Post.get_by_id(id)
 	post_dict = model_to_dict(post)
@@ -55,6 +58,7 @@ def get_one_post(id):
 
 #route to update an existing post
 @posts.route('/<id>', methods=['PUT'])
+@login_required
 def update_post(id):
 	payload = request.get_json()
 	post = models.Post.get_by_id(id)
@@ -79,6 +83,7 @@ def update_post(id):
 
 #route to delete a single post
 @posts.route('/<id>', methods=['DELETE'])
+
 def delete_post(id):
 	#find post to delete by it's id
 	post_to_delete = models.Post.get_by_id(id)
