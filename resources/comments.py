@@ -36,6 +36,22 @@ def update_comment(id):
 	comment_dict = model_to_dict(comment)
 	return jsonify(data=comment_dict, status={'code': 200, 'message': 'Successfully updated comment'})
 
+#route to delete individual comment
+@comments.route('/<id>', methods=['DELETE'])
+def delete_comment(id):
+	#this will find the comment matching the id and delete it from the db
+	query = models.Comment.delete().where(models.Comment.id == id)
+	query.execute()
+	return jsonify(data={}, status={'code': 200, 'message': 'Successfully deleted comment'})
+
+
+
+
+
+
+
+
+
 
 
 
