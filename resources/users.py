@@ -2,7 +2,7 @@ import models
 from flask import request, jsonify, Blueprint
 from playhouse.shortcuts import model_to_dict
 from flask_bcrypt import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 
 users = Blueprint('users', 'users')
 
@@ -54,6 +54,15 @@ def login():
 
 	except models.DoesNotExist:
 		return jsonify(data={}, status={'code': 401, 'message': 'Username or Password is incorrect'}), 401
+
+#route to let user logout
+@users.route('/logout', methods=['GET'])
+def logout():
+	#logout user by their email
+	email = model_to_dict(current_user)['email']
+	logout_user()
+
+	return jsonify(data={}, status={'code': 200, 'message': 'Succesfully logged out {}'.format(email)}), 200
 
 
 
