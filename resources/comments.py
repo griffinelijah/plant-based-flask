@@ -1,6 +1,7 @@
 import models
 from flask import Blueprint, jsonify, request
 from playhouse.shortcuts import model_to_dict
+from flask_login import current_user, login_required
 
 comments = Blueprint('comments', 'comments')
 
@@ -10,10 +11,14 @@ def create_comment():
 	#payload will contain info to create a comment
 	payload = request.get_json()
 	#create new comment from payload info
-	comment = models.Comment.create(**payload)
+	comment = models.Comment.create(
+		#this will tie a comment to whoever the logged in user is
+		user=current_user.id,
+		body=payload['body']
+	)
 	#must be turned to a dict before returning
 	comment_dict = model_to_dict(comment)
-	return jsonify(data=comment_dict, status={'code': 201, 'status': 'Successfully created comment'})
+	return jsonify(data=comment_dict, status={'code': 201, 'status': 'Successfully created comment'}), 201
 
 #route to show individual comment
 @comments.route('/<id>', methods=['GET'])
