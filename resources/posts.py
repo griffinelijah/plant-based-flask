@@ -35,7 +35,6 @@ def create_post():
 		#payload contents will create new post
 		post = models.Post.create(
 			user=current_user.id,
-			comment=payload['comment'],
 			title=payload['title'],
 			description=payload['description'],
 			image=payload['image']

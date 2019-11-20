@@ -6,15 +6,23 @@ from flask_login import current_user, login_required
 comments = Blueprint('comments', 'comments')
 
 #route to create a comment
-@comments.route('/', methods=['POST'])
-def create_comment():
+# pass through post id that comment is comment
+# query for post that matches id being passed through
+# foreign key can ref that post specifically
+
+@comments.route('/<postid>', methods=['POST'])
+def create_comment(postid):
 	#payload will contain info to create a comment
 	payload = request.get_json()
+	#quuery. for post matching id
+	post = models.Post.get_by_id(postid)
 	#create new comment from payload info
 	comment = models.Comment.create(
 		#this will tie a comment to whoever the logged in user is
 		user=current_user.id,
-		body=payload['body']
+		body=payload['body'],
+		#this will relate the comment to the post the comment is on
+		post=post.id
 	)
 	#must be turned to a dict before returning
 	comment_dict = model_to_dict(comment)

@@ -12,18 +12,8 @@ class User(UserMixin, Model):
 	class Meta:
 		database = DATABASE
 
-class Comment(Model):
-	user = ForeignKeyField(User, backref='comments')
-	body = CharField()
-	# post = ForeignKeyField(Post, backref='comments')
-
-	class Meta:
-		database = DATABASE
-
-
 class Post(Model):
 	user = ForeignKeyField(User, backref='posts')
-	comment = CharField() #this will change to a foreignkeyfield once comments are introduced
 	title = CharField()
 	description = CharField()
 	image = CharField()
@@ -31,6 +21,15 @@ class Post(Model):
 
 	class Meta:
 		database = DATABASE
+		
+class Comment(Model):
+	user = ForeignKeyField(User, backref='comments')
+	body = CharField()
+	post = ForeignKeyField(Post, backref='comments')
+
+	class Meta:
+		database = DATABASE
+
 
 
 def initialize():
