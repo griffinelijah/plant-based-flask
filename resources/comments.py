@@ -33,20 +33,34 @@ def get_one_comment(id):
 @comments.route('/<id>', methods=['PUT'])
 def update_comment(id):
 	payload = request.get_json()
-	#this query is to find a comment matching the id and update it with the info from the payload
-	query = models.Comment.update(**payload).where(models.Comment.id == id)
-	query.execute()
-	#returns object as dictionary
+	#query to find comment matching the id
 	comment = models.Comment.get_by_id(id)
-	comment_dict = model_to_dict(comment)
+	#before updating comment make sure user's id matching the logged in user id
+	if(comment.user.id == current_user.id):
+		comment.body=payload['body']
+
+		comment.save()
+		#returns object as dictionary
+		comment_dict = model_to_dict(comment)
+		comment_dict['user'].pop('password')
+		return jsonify(data=comment_dict, status={'code': 200, 'message': 'Successfully updated comment'})
+	#else if the do not 'own' this comment display error stating they must own it to update it
+	else:
+		return jsonify(data='Forbidden', status={'code': 403, 'message': 'You must be the owner of this comment to update it it'}), 403
+
 	return jsonify(data=comment_dict, status={'code': 200, 'message': 'Successfully updated comment'})
 
 #route to delete individual comment
 @comments.route('/<id>', methods=['DELETE'])
 def delete_comment(id):
-	#this will find the comment matching the id and delete it from the db
-	query = models.Comment.delete().where(models.Comment.id == id)
-	query.execute()
+	#query for matching comment by idi
+	comment_to_delete = models.Comment.get_by_id(id)
+	#check to see if comment belongs to user, if it does not return error
+	if comment_to_delete.user.id != current_user.id:
+		return jsonify(data='Forbidden', status={'code': 403, 'message': 'You must be the owner of this comment to delete it'}), 403
+	#if it does match allow deletion
+	else:
+		comment_to_delete.delete_instance()
 	return jsonify(data={}, status={'code': 200, 'message': 'Successfully deleted comment'})
 
 
