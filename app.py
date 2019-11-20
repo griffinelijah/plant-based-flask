@@ -2,12 +2,29 @@ from flask import Flask, jsonify, g
 import models
 
 from resources.posts import posts
+from resources.users import users
+
+from flask_login import LoginManager
 
 DEBUG = True
 PORT = 8000
 
 #initialize instance of flask clasas
 app = Flask(__name__)
+
+#session secret, later on we will hide this for security
+app.secret_key = 'shhhh'
+#configuring the app to use loginmanager
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(userid):
+	#this is where we find a matching user in the db to login
+	try:
+		return models.User.get(models.User.id == userid)
+	except models.DoesNotExist:
+		return None
 
 @app.before_request
 def before_request():
@@ -28,6 +45,7 @@ def hello():
 
 
 app.register_blueprint(posts, url_prefix='/api/v1/posts')
+app.register_blueprint(users, url_prefix='/api/v1/users')
 
 if __name__ == '__main__':
 	models.initialize()
