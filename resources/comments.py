@@ -33,12 +33,20 @@ def get_one_comment(id):
 @comments.route('/<id>', methods=['PUT'])
 def update_comment(id):
 	payload = request.get_json()
-	#this query is to find a comment matching the id and update it with the info from the payload
-	query = models.Comment.update(**payload).where(models.Comment.id == id)
-	query.execute()
-	#returns object as dictionary
+	#query to find comment matching the id
 	comment = models.Comment.get_by_id(id)
-	comment_dict = model_to_dict(comment)
+	#before updating comment make sure user's id matching the logged in user id
+	if(comment.user.id == current_user.id):
+		models.Comment.update(**payload)
+		comment.save()
+		#returns object as dictionary
+		comment_dict = model_to_dict(comment)
+		comment_dict['user'].pop('password')
+		return jsonify(data=comment_dict, status={'code': 200, 'message': 'Successfully updated comment'})
+	#else if the do not 'own' this comment display error stating they must own it to update it
+	else:
+		return jsonify(data='Forbidden', status={'code': 403, 'message': 'You must be the owner of this comment to delete it'}), 403
+
 	return jsonify(data=comment_dict, status={'code': 200, 'message': 'Successfully updated comment'})
 
 #route to delete individual comment
