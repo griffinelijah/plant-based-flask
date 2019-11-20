@@ -50,8 +50,13 @@ def update_post(id):
 
 	return jsonify(data=post_dict, status={'code': 200, 'message': 'post succesfully updated'})
 
-
-
+#route to delete a single plant
+@posts.route('/<id>', methods=['DELETE'])
+def delete_post(id):
+	#this finds the post matching the id beeing passed through deletes it
+	query = models.Post.delete().where(models.Post.id == id)
+	query.execute()
+	return jsonify(data={}, status={'code':200, 'message': 'resource succesfully deleted'})
 
 
 
