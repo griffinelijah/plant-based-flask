@@ -15,3 +15,14 @@ def create_comment():
 	comment_dict = model_to_dict(comment)
 	return jsonify(data=comment_dict, status={'code': 201, 'status': 'Successfully created comment'})
 
+#route to show individual comment
+@comments.route('/<id>', methods=['GET'])
+def get_one_comment(id):
+	#retrieve comment by their id 
+	comment = models.Comment.get_by_id(id)
+	#turn to a dict
+	comment_dict = model_to_dict(comment)
+	return jsonify(data=comment_dict, status={'code': 201, 'message': 'successfully retrieved comment'})
+
+
+
