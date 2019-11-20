@@ -61,7 +61,9 @@ def update_post(id):
 
 	#first we check to make sure the post belongs to the user by matching their id's
 	if(post.user.id == current_user.id):
-		models.Post.update(**payload)
+		post.title = payload['title'],
+		post.description = payload['description'],
+		post.image = payload['image'],
 		post.save()
 		post_dict = model_to_dict(post)
 
@@ -70,7 +72,8 @@ def update_post(id):
 		return jsonify(data=post_dict, status={'code': 200, 'message': 'post succesfully updated'}), 200
 
 		#if they do not we will display a message stating you must be the owner of the post to update it
-	else: return jsonify(data='Forbidden', status={'code': 403, 'message': 'You must be the owner of this post to update it'}), 403
+	else: 
+		return jsonify(data='Forbidden', status={'code': 403, 'message': 'You must be the owner of this post to update it'}), 403
 
 	return jsonify(data=post_dict, status={'code': 200, 'message': 'post succesfully updated'}), 200
 
