@@ -24,5 +24,18 @@ def get_one_comment(id):
 	comment_dict = model_to_dict(comment)
 	return jsonify(data=comment_dict, status={'code': 201, 'message': 'successfully retrieved comment'})
 
+#route to update an exising comment
+@comments.route('/<id>', methods=['PUT'])
+def update_comment(id):
+	payload = request.get_json()
+	#this query is to find a comment matching the id and update it with the info from the payload
+	query = models.Comment.update(**payload).where(models.Comment.id == id)
+	query.execute()
+	#returns object as dictionary
+	comment = models.Comment.get_by_id(id)
+	comment_dict = model_to_dict(comment)
+	return jsonify(data=comment_dict, status={'code': 200, 'message': 'Successfully updated comment'})
+
+
 
 
