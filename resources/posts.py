@@ -1,6 +1,7 @@
 import models
 from flask import Blueprint, jsonify, request
 from playhouse.shortcuts import model_to_dict
+from flask_login import current_user, login_required
 
 posts = Blueprint('posts', 'posts')
 
@@ -13,13 +14,24 @@ def post_index():
 	except models.DoesNotExist:
 		return jsonify(data={}, status={'code': 401, 'message': 'Error getting resources'})
 
+#this route will show only posts by the currently logged in user
+@posts.route('/myPosts', methods=['GET'])
+def current_users_posts():
+	try:# look for all posts that have a user id that matches the currently logged in users id
+		this_users_post_instances = models.Post.select().where(models.Post.user_id == current_user.id)
+		#turn all posts found to be belong to current_user to arr of dicts
+		this_users_post_dicts = [model_to_dict(post) for post in this_users_post_instances]
+		return jsonify(data=this_users_post_dicts, status={'code': 200, 'message': 'Successfully retreived all of your posts'})
+	except models.DoesNotExist:
+		return jsonify(data={}, status={'code': 401, 'message': 'Error getting posts'}), 401
+
 @posts.route('/', methods=['POST'])
 def create_post():
 		#this route will let you create a post
 		payload = request.get_json()
 		#payload contents will create new post
 		post = models.Post.create(
-			# user=current_user.id,
+			user=current_user.id,
 			comment=payload['comment'],
 			title=payload['title'],
 			description=payload['description'],
@@ -28,6 +40,9 @@ def create_post():
 		#must be turned into a dict before returning the json object
 		post_dict = model_to_dict(post)
 		return jsonify(data=post_dict, status={'code': 201, 'message': 'sucessfully created post'}), 201
+
+
+
 
 #route to retrieve a single post
 @posts.route('/<id>', methods=['GET'])
