@@ -14,7 +14,7 @@ def post_index():
 	except models.DoesNotExist:
 		return jsonify(data={}, status={'code': 401, 'message': 'Error getting resources'})
 
-#this route will show only posts by the currently logged in user
+#this route will show only posts created by the currently logged in user
 @posts.route('/myPosts', methods=['GET'])
 def current_users_posts():
 	try:# look for all posts that have a user id that matches the currently logged in users id
@@ -25,6 +25,7 @@ def current_users_posts():
 	except models.DoesNotExist:
 		return jsonify(data={}, status={'code': 401, 'message': 'Error getting posts'}), 401
 
+#route that let's you create a new post
 @posts.route('/', methods=['POST'])
 def create_post():
 		#this route will let you create a post
@@ -56,21 +57,35 @@ def get_one_post(id):
 @posts.route('/<id>', methods=['PUT'])
 def update_post(id):
 	payload = request.get_json()
-	#this updates the post with the info from payload that matches the post id being passed throug the url
-	query = models.Post.update(**payload).where(models.Post.id == id)
-	query.execute()
-	#this returns updated post object and turns to dict
 	post = models.Post.get_by_id(id)
-	post_dict = model_to_dict(post)
 
-	return jsonify(data=post_dict, status={'code': 200, 'message': 'post succesfully updated'})
+	#first we check to make sure the post belongs to the user by matching their id's
+	if(post.user.id == current_user.id):
+		models.Post.update(**payload)
+		post.save()
+		post_dict = model_to_dict(post)
 
-#route to delete a single plant
+		#remove password from user object before returning 
+		post_dict['user'].pop('password')
+		return jsonify(data=post_dict, status={'code': 200, 'message': 'post succesfully updated'}), 200
+
+		#if they do not we will display a message stating you must be the owner of the post to update it
+	else: return jsonify(data='Forbidden', status={'code': 403, 'message': 'You must be the owner of this post to update it'}), 403
+
+	return jsonify(data=post_dict, status={'code': 200, 'message': 'post succesfully updated'}), 200
+
+#route to delete a single post
 @posts.route('/<id>', methods=['DELETE'])
 def delete_post(id):
-	#this finds the post matching the id beeing passed through deletes it
-	query = models.Post.delete().where(models.Post.id == id)
-	query.execute()
+	#find post to delete by it's id
+	post_to_delete = models.Post.get_by_id(id)
+	#if the current_user id does not match the post owner's id do not allow deletion
+	if post_to_delete.user.id != current_user.id:
+		return jsonify(data='Forbidden', status={'code': 403, 'message': 'You must be the owner of this post to delete it'}), 403
+
+	#else if they do match delete the post 
+	else:
+		post_to_delete.delete_instance()
 	return jsonify(data={}, status={'code':200, 'message': 'resource succesfully deleted'})
 
 
