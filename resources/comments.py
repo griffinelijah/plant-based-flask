@@ -37,7 +37,8 @@ def update_comment(id):
 	comment = models.Comment.get_by_id(id)
 	#before updating comment make sure user's id matching the logged in user id
 	if(comment.user.id == current_user.id):
-		models.Comment.update(**payload)
+		comment.body=payload['body']
+
 		comment.save()
 		#returns object as dictionary
 		comment_dict = model_to_dict(comment)
