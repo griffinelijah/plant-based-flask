@@ -22,7 +22,7 @@ class Comment(Model):
 
 
 class Post(Model):
-	# user = ForeignKeyField(User, backref='posts')
+	user = ForeignKeyField(User, backref='posts')
 	comment = CharField() #this will change to a foreignkeyfield once comments are introduced
 	title = CharField()
 	description = CharField()
