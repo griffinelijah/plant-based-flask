@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, g
+from flask_cors import CORS
 import models
 
 from resources.posts import posts
@@ -26,6 +27,14 @@ def load_user(userid):
 		return models.User.get(models.User.id == userid)
 	except models.DoesNotExist:
 		return None
+@login_manager.unauthorized_handler
+def unauthorized():
+	return jsonify(data={
+			'error': 'user not logged in'
+		}, status={
+			'code': 401,
+			'message': 'You must be logged in to access that resource'
+		}), 401
 
 @app.before_request
 def before_request():
@@ -39,10 +48,11 @@ def after_request(response):
 	g.db.close()
 	return response
 
-#default route
-@app.route('/')
-def hello():
-	return 'Hello'
+
+CORS(posts, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(comments, origins=['http://localhost:3000'], supports_credentials=True)
+
 
 
 app.register_blueprint(posts, url_prefix='/api/v1/posts')

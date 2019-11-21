@@ -28,6 +28,16 @@ def create_comment(postid):
 	comment_dict = model_to_dict(comment)
 	return jsonify(data=comment_dict, status={'code': 201, 'status': 'Successfully created comment'}), 201
 
+# this route will query the database for all the comments matchinig the postid
+@comments.route('/<postid>', methods=['GET'])
+def get_this_posts_comments(postid):
+	try:
+		#query for all comments that have a post.ud matching postid being passed through the route
+		comments = [model_to_dict(comments) for comments in models.Comment.select().where(models.Comment.post.id == postid)]
+		return jsonify(data=comments, status={'code': 200, 'message': 'Successfully got all resources'}), 200
+	except models.DoesNotExist:
+		return jsonify(data={}, status={'code': 401, 'message': 'Error getting resources'})
+
 #route to show individual comment
 @comments.route('/<id>', methods=['GET'])
 def get_one_comment(id):
@@ -37,6 +47,15 @@ def get_one_comment(id):
 	comment_dict = model_to_dict(comment)
 	return jsonify(data=comment_dict, status={'code': 201, 'message': 'successfully retrieved comment'})
 
+#this route will retrieve all the comments ni the db- mainly for testinig will most likely be taken out
+@comments.route('/', methods=['GET'])
+def comment_index():
+	try:
+		comments = [model_to_dict(comments) for comments in models.Comment.select()]
+		return jsonify(data=comments, status={'code': 200, 'message': 'successfully retrieved all comments'}), 200
+
+	except models.DoesNotExist:
+		return jsonify(data={}, status={'code': 401, 'message': 'unable to gather resources'})	
 #route to update an exising comment
 @comments.route('/<id>', methods=['PUT'])
 def update_comment(id):
