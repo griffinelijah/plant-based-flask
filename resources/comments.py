@@ -32,20 +32,20 @@ def create_comment(postid):
 @comments.route('/<postid>', methods=['GET'])
 def get_this_posts_comments(postid):
 	try:
-		#query for all comments that have a post.ud matching postid being passed through the route
-		comments = [model_to_dict(comments) for comments in models.Comment.select().where(models.Comment.post.id == postid)]
+		#query for all comments that have a post.id matching postid being passed through the route
+		comments = [model_to_dict(comments) for comments in models.Comment.select().where(models.Comment.post_id == postid)]
 		return jsonify(data=comments, status={'code': 200, 'message': 'Successfully got all resources'}), 200
 	except models.DoesNotExist:
 		return jsonify(data={}, status={'code': 401, 'message': 'Error getting resources'})
 
 #route to show individual comment
-@comments.route('/<id>', methods=['GET'])
-def get_one_comment(id):
-	#retrieve comment by their id 
-	comment = models.Comment.get_by_id(id)
-	#turn to a dict
-	comment_dict = model_to_dict(comment)
-	return jsonify(data=comment_dict, status={'code': 201, 'message': 'successfully retrieved comment'})
+# @comments.route('/<id>', methods=['GET'])
+# def get_one_comment(id):
+# 	#retrieve comment by their id 
+# 	comment = models.Comment.get_by_id(id)
+# 	#turn to a dict
+# 	comment_dict = model_to_dict(comment)
+# 	return jsonify(data=comment_dict, status={'code': 201, 'message': 'successfully retrieved comment'})
 
 #this route will retrieve all the comments ni the db- mainly for testinig will most likely be taken out
 @comments.route('/', methods=['GET'])

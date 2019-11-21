@@ -25,7 +25,7 @@ class Post(Model):
 class Comment(Model):
 	user = ForeignKeyField(User, backref='comments')
 	body = CharField()
-	post = ForeignKeyField(Post, backref='comments')
+	post = ForeignKeyField(Post, db_column='post', backref='comments')
 
 	class Meta:
 		database = DATABASE
@@ -34,7 +34,7 @@ class Comment(Model):
 
 def initialize():
 	DATABASE.connect()
-	DATABASE.create_tables([User, Comment, Post], safe=True)
+	DATABASE.create_tables([User, Post, Comment], safe=True)
 	print('TABLES CREATED')
 	DATABASE.close()
 
