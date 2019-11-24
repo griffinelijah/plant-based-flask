@@ -64,9 +64,9 @@ def update_post(id):
 
 	#first we check to make sure the post belongs to the user by matching their id's
 	if(post.user.id == current_user.id):
-		post.title = payload['title'],
-		post.description = payload['description'],
-		post.image = payload['image'],
+		post.title = payload['title'] if 'title' in payload else None
+		post.description = payload['description'] if 'description' in payload else None
+		post.image = payload['image'] if 'image' in payload else None
 		post.save()
 		post_dict = model_to_dict(post)
 
