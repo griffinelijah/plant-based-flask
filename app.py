@@ -50,9 +50,9 @@ def after_request(response):
 	return response
 
 
-CORS(posts, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(comments, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(posts, origins=['http://localhost:3000', 'https://plant-based-react.herokuapp.com'], supports_credentials=True)
+CORS(users, origins=['http://localhost:3000', 'https://plant-based-react.herokuapp.com'], supports_credentials=True)
+CORS(comments, origins=['http://localhost:3000','https://plant-based-react.herokuapp.com'], supports_credentials=True)
 
 
 
